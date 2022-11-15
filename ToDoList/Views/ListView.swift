@@ -8,25 +8,41 @@
 import SwiftUI
 
 struct ListView: View {
-    var items: [String] = ["This is first item!","This is second item!","This is third item!"]
+    //MARK: - Vars
+    @EnvironmentObject var listViewModel: ListViewModel
+    
+    //MARK: - Body
     var body: some View {
-        List{
-            ForEach(items, id: \.self) { item in
-                ListRowView(title: item)
+        ZStack{
+            if listViewModel.items.isEmpty{
+                NoItemsView()
+                    .transition(AnyTransition.opacity.animation(.easeIn))
+            }else{
+                List{
+                    ForEach(listViewModel.items) { item in
+                        ListRowView(item: item)
+                            .onTapGesture {
+                                listViewModel.updateItem(item: item)
+                            }
+                    }
+                    .onDelete(perform: listViewModel.deleteItem)
+                    .onMove(perform: listViewModel.moveItem)
+                }
+                .listStyle(.insetGrouped)
             }
         }
-        .listStyle(.plain)
         .navigationTitle("Todo List📝")
         .navigationBarItems(leading: EditButton(),
                             trailing: NavigationLink("Add", destination: AddView()))
     }
 }
-
+//MARK: - PreviewProvider
 struct ListView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView{
             ListView()
         }
+        .environmentObject(ListViewModel())
     }
 }
 

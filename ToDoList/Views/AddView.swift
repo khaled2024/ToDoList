@@ -8,7 +8,13 @@
 import SwiftUI
 
 struct AddView: View {
+    //MARK: - Vars
+    @State var showAlert: Bool = false
+    @State var titleAlert: String = ""
+    @EnvironmentObject var listViewModel: ListViewModel
     @State var text: String = ""
+    @Environment(\.presentationMode) var presentationMode
+    //MARK: -  Body
     var body: some View {
         ScrollView{
             VStack(spacing: 10){
@@ -18,11 +24,11 @@ struct AddView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.leading, 10)
                     .background {
-                        Color.gray.brightness(0.3)
+                        Color(uiColor: .secondarySystemBackground)
                             .cornerRadius(15)
                     }
                 Button {
-                    
+                    saveButtonPressed()
                 } label: {
                     Text("Save".uppercased())
                         .foregroundColor(.white)
@@ -30,7 +36,7 @@ struct AddView: View {
                         .frame(height: 55)
                         .frame(maxWidth: .infinity)
                         .background {
-                            Color.blue.cornerRadius(15)
+                            Color.accentColor.cornerRadius(15)
                         }
                 }
                 
@@ -38,13 +44,36 @@ struct AddView: View {
             .padding(20)
         }
         .navigationTitle("Add an item 🖋️")
+        .alert(isPresented: $showAlert, content: getAlert)
     }
+    //MARK: - functions
+    func saveButtonPressed(){
+        if textValied() {
+            listViewModel.addItem(title: text)
+            presentationMode.wrappedValue.dismiss()
+        }
+    }
+    // textValid
+    func textValied()-> Bool{
+        if text.count < 3 {
+            titleAlert = "Please write 3 Charcters at least 😇"
+            showAlert.toggle()
+            return false
+        }
+        return true
+    }
+    // get Alert
+    func getAlert() -> Alert{
+        return Alert(title: Text(titleAlert))
+    }
+    
 }
-
+//MARK: - PreviewProvider
 struct AddView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView{
             AddView()
         }
+        .environmentObject(ListViewModel())
     }
 }

@@ -47,7 +47,7 @@ class ListViewModel: ObservableObject{
     }
     // save items
     func saveItems(){
-        // encode the whole Struct to json and decode it to data again 
+        // encode the whole Struct to json and decode it to data again
         if let encodedData = try? JSONEncoder().encode(items){
             UserDefaults.standard.set(encodedData, forKey: itemKey)
         }
